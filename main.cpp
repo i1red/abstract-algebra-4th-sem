@@ -1,5 +1,6 @@
 #include <iostream>
 #include "GaloisField/GaloisField.h"
+#include "CyclicPolynomial/CyclicPolynomial.h"
 
 
 namespace test {
@@ -53,10 +54,27 @@ namespace test {
         testMul(2, 3, f8mul, f8primitive);
     }
 
+    void testCalculatingCyclicPolynomial() { /* You can compare these results with results on Wikipedia (circular polynomial) */
+        auto cyclicPolinomial = new CyclicPolynomial();
+
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(3));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(4));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(5));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(6));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(7));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(8));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(9));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(10));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(11));
+        cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(12));
+    }
+
 }
 
 
 int main() {
-    test::run();
+
+    test::testCalculatingCyclicPolynomial();
+    //test::run();
     return 0;
 }
