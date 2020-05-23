@@ -54,7 +54,7 @@ namespace test {
         testMul(2, 3, f8mul, f8primitive);
     }
 
-    void testCalculatingCyclicPolynomial() { /* You can compare these results with results on Wikipedia (circular polynomial) */
+    void testCalculatingCyclicPolynomial() { /* You can compare these results with results on Wikipedia (cyclic polynomial) */
         auto cyclicPolinomial = new CyclicPolynomial();
 
         cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(3));
