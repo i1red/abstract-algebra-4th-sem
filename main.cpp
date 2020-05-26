@@ -1,7 +1,7 @@
 #include <iostream>
 #include "GaloisField/GaloisField.h"
 #include "CyclicPolynomial/CyclicPolynomial.h"
-
+#include "CountRoots/CountRoots.h"
 
 namespace test {
     std::vector<std::vector<int>> f9mul = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
