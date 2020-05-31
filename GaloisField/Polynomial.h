@@ -37,6 +37,12 @@ namespace gf {
         friend Polynomial<X> multiply(const Polynomial<X>&, const Polynomial<X>&, const Polynomial<X>&);
         template <typename X>
         friend Polynomial<X> modDivide(const Polynomial<X>&, const Polynomial<X>&);
+        template <typename X>
+        friend Polynomial<X> MakeMonic(Polynomial<X>);
+        template <typename X>
+        friend Polynomial<X> Derivative(Polynomial<X>);
+        template <typename X>
+        friend X PointValue(Polynomial<X>, X);
     };
 
     template<typename T>
@@ -232,6 +238,57 @@ namespace gf {
 
         return tmp;
     }
+
+    /* Creates Monic Polynomial from given Polynomial */
+    template <typename X>
+    Polynomial<X> MakeMonic(gf::Polynomial<X> pol) {
+        std::vector<X> init_vec;
+        X max_coef = pol.values[0];
+        X p = pol.p();
+        if (max_coef == 1) {
+            return pol;
+        }
+        else {
+            for (int i = 0; i < pol.n(); i++) {
+                init_vec.push_back(ModArithmetic<X>::divide(pol.values[i], max_coef, p));
+            }
+            return Polynomial<X>(init_vec, p);
+        }
+    }
+
+    /* Creates Derivative Polynomial from given Polynomial */
+    template <typename X>
+    gf::Polynomial<X>  Derivative(gf::Polynomial<X> pol) {
+        std::vector<X> init_vec;
+        X p = pol.p();
+        for (int i = 0; i < pol.n() - 1; i++) {
+            init_vec.push_back(ModArithmetic<X>::multiply(pol.values[i], pol.n() - i - 1, p));
+        }
+        return gf::Polynomial<X>(init_vec, p);
+    }
+
+    template <typename X>
+    long int  ModularPow(X base, long int degree, X mod) {
+        if (degree == 0) return 1;
+        X res = base;
+        for (long int i = 1; i < degree; i++) {
+            res = ModArithmetic<X>::multiply(res, base, mod);
+        }
+        return res;
+    }
+
+    /*Finds polynomial value at given point  */
+    template <typename X>
+    X  PointValue(gf::Polynomial<X> pol, X x) {
+        std::vector<X> init_vec;
+        X p = pol.p();
+        X result = 0;
+        for (int i = 0; i < pol.n(); i++) {
+            result = ModArithmetic<X>::add(result, ModArithmetic<X>::multiply(pol.values[i], gf::ModularPow(x, pol.n() - i - 1, p), p), p);
+        }
+        return result;
+    }
+
 }
 
 
