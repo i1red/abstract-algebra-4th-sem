@@ -71,10 +71,42 @@ namespace test {
 
 }
 
+namespace ui {
+    void help() {
+        std::cout << "Enter command with the needed arguments from the list below\n";
+        std::cout << "\t->smth ARG1 ARG2\n";
+        std::cout << "\t->smth ARG1 ARG2\n";
+        std::cout << "\t->quit\n";
+        std::cout << "\t\tfor exit\n";
+    }
+
+    void execute(std::string command) {
+        double arg1, arg2;
+        std::cin >> arg1 >> arg2;
+        if (command == "add") std::cout << arg1 + arg2;
+        else std::cout << "error";
+    }
+
+    void interactionLoop() {
+        std::string command;
+        ui::help();
+
+        while (true) {
+            std::cout << "->";
+            std::cin >> command;
+            if (command == "quit") break;
+            else execute(command);
+        }
+
+        std::cout << "bye";
+    };
+}
+
 
 int main() {
 
-    test::testCalculatingCyclicPolynomial();
+//    test::testCalculatingCyclicPolynomial();
     //test::run();
+    ui::interactionLoop();
     return 0;
 }
