@@ -1,7 +1,6 @@
 #include <iostream>
-#include "GaloisField/GaloisField.h"
+#include "GaloisField/Polynomial.h"
 #include "CyclicPolynomial/CyclicPolynomial.h"
-#include "CountRoots/CountRoots.h"
 
 namespace test {
     std::vector<std::vector<int>> f9mul = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -14,7 +13,7 @@ namespace test {
                                            {0, 7, 5, 4, 2, 6, 8, 3, 1},
                                            {0, 8, 4, 7, 3, 2, 5, 1, 6}};
 
-    gf::Vector<int> f9primitive("x^2 + 1", 3);
+    gf::Polynomial<int> f9primitive("x^2 + 1", 3, 3);
 
     std::vector<std::vector<int>> f8mul = {{0, 0, 0, 0, 0, 0, 0, 0},
                                            {0, 1, 2, 3, 4, 5, 6, 7},
@@ -25,18 +24,18 @@ namespace test {
                                            {0, 6, 7, 1, 5, 3, 2, 4},
                                            {0, 7, 5, 2, 1, 6, 4, 3}};
 
-    gf::Vector<int> f8primitive("x^3 + x + 1", 2);
+    gf::Polynomial<int> f8primitive("x^3 + x + 1", 2, 4);
 
 
-    void testMul(int q, int n, std::vector<std::vector<int>> table, const gf::Vector<int> primitive) {
-        std::cout << "TEST multiplication q=" << q << ", n=" << n << std::endl;
+    void testMul(int p, int n, std::vector<std::vector<int>> table, const gf::Polynomial<int> primitive) {
+        std::cout << "TEST multiplication p=" << p << ", n=" << n << std::endl;
 
-        int bound = intPow(q, n);
+        int bound = intPow(p, n);
         int successfulTest = 0;
 
         for (int i = 0; i < bound; ++i) {
             for (int j = 0; j < bound; ++j) {
-                int mulRes = gf::vecPolMod(gf::vecPolMul(gf::Vector<int>(i, q, n), gf::Vector<int>(j, q, n)), primitive).toInt();
+                int mulRes = gf::multiply(gf::Polynomial<int>(i, p, n), gf::Polynomial<int>(j, p, n), primitive).toInt();
                 if (mulRes == table[i][j]) {
                     successfulTest += 1;
                 }
