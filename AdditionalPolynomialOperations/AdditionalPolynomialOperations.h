@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include "GaloisField/Polynomial.h"
-#include "GaloisField/Vector.h"
 #include "ModArithmetic/ModArithmetic.h"
 #include "utils.h"
 #include "string.h"
@@ -23,8 +22,8 @@ gf::Polynomial<T> MakeMonic(gf::Polynomial<T> p) {
 
 /* template <typename T>
 gf::Polynomial<T> MakeMonic(gf::Polynomial<T> p) {
-	std::map<size_t, gf::Vector<T>> pol = toPolynomial<T>(p.toString(), 'x');
-	gf::Vector<T> max_coef = pol[p.n()];
+	std::map<size_t, gf::Polynomial<T>> pol = toPolynomial<T>(p.toString(), 'x');
+	gf::Polynomial<T> max_coef = pol[p.n()];
 	T q = p.q();
 	for (auto& item : pol) {
 		item.second = gf::vecPolMod(item.second, max_coef);

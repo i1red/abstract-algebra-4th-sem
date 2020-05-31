@@ -2,183 +2,238 @@
 #define ABSTRACT_ALGEBRA2_POLYNOMIAL_H
 
 
+#include <vector>
+#include <algorithm>
+#include <ostream>
+#include <stdexcept>
+#include <string>
 #include <map>
-#include "Vector.h"
+#include "ModArithmetic/ModArithmetic.h"
 #include "utils.h"
 
 
 namespace gf {
     template <typename T>
     class Polynomial {
-        std::map<size_t, Vector<T>> monoms;
-        T q_;
-        size_t n_;
+        std::vector<T> values;
+        T p_;
     public:
-        Polynomial(const std::map<size_t, T>&, const T&, size_t);
-        Polynomial(const std::map<size_t, Vector<T>>&, const T&, size_t);
-        Polynomial(const std::string& strRepr, const T& q, size_t n, char variable=DEFAULT_VAR);
-
-        std::string toString(char variable=DEFAULT_VAR) const;
-        T q() const;
+        Polynomial(const std::initializer_list<T>&, const T&);
+        Polynomial(const std::vector<T>&, const T&);
+        Polynomial(T, const T&, size_t);
+        Polynomial(const std::string&, const T&, char variable=DEFAULT_VAR);
         size_t n() const;
+        T p() const;
+        T toInt() const;
+        std::string toString(char variable=DEFAULT_VAR) const;
 
         template <typename X>
-        friend std::ostream& operator<<(std::ostream& os, const Polynomial<X>&);
+        friend std::ostream& operator<<(std::ostream&, const Polynomial<X>&);
         template <typename X>
-        friend Polynomial<X> polAdd(const Polynomial<X>&, const Polynomial<X>&);
+        friend Polynomial<X> add(const Polynomial<X>&, const Polynomial<X>&);
         template <typename X>
-        friend Polynomial<X> polSubtract(const Polynomial<X>&, const Polynomial<X>&);
+        friend Polynomial<X> subtract(const Polynomial<X>&, const Polynomial<X>&);
         template <typename X>
-        friend Polynomial<X> polMultiply(const Polynomial<X>&, const Polynomial<X>&, const Vector<X>&);
+        friend Polynomial<X> multiply(const Polynomial<X>&, const Polynomial<X>&, const Polynomial<X>&);
+        template <typename X>
+        friend Polynomial<X> modDivide(const Polynomial<X>&, const Polynomial<X>&);
     };
 
     template<typename T>
-    Polynomial<T>::Polynomial(const std::map<size_t, T>& monoms, const T& q, size_t n) : q_(q), n_(n) {
-        for(auto& item: monoms) {
-            this->monoms.emplace(item.first, Vector<T>(item.second, q, n));
+    Polynomial<T>::Polynomial(const std::initializer_list<T>& initValues, const T& p) : values(initValues), p_(p) {}
+
+    template <typename T>
+    Polynomial<T>::Polynomial(const std::vector<T>& values, const T& p) : values(values), p_(p) {}
+
+    template <typename T>
+    Polynomial<T>::Polynomial(T number, const T& mod, size_t len) : p_(mod) {
+        while (number > 0) {
+            T tmp = number % mod;
+            number = number / mod;
+            this->values.push_back(tmp);
+        }
+
+        if (values.size() > len) {
+            throw std::invalid_argument("Number is to large");
+        }
+
+        for (size_t i = values.size(); i < len; ++i) {
+            this->values.push_back(0);
+        }
+
+        std::reverse(this->values.begin(), this->values.end());
+    }
+
+    template <typename T>
+    Polynomial<T>::Polynomial(const std::string& polyForm, const T& mod, char variable) : p_(mod) {
+        std::map<size_t, T> monoms = toPolynomial<T>(polyForm, variable);
+
+        this->values = std::vector<T>((monoms.size() > 0 ? monoms.rbegin()->first : 0) + 1, 0);
+
+        for (auto& monom: monoms) {
+            this->values[this->values.size() - monom.first - 1] = monom.second;
         }
     }
 
     template <typename T>
-    Polynomial<T>::Polynomial(const std::map<size_t, Vector<T>>& monoms, const T& q, size_t n) : monoms(monoms), q_(q), n_(n) {}
+    size_t Polynomial<T>::n() const {
+        return this->values.size();
+    }
 
     template <typename T>
-    Polynomial<T>::Polynomial(const std::string &strRepr, const T &q, size_t n, char variable) :
-            Polynomial(toPolynomial<T>(strRepr, variable), q, n) {}
+    T Polynomial<T>::p() const {
+        return this->p_;
+    }
+
+    template <typename T>
+    T Polynomial<T>::toInt() const {
+        T res = 0, tmp = 1;
+
+        for (int i = this->values.size() - 1; i >= 0; --i) {
+            res = res + tmp * this->values[i];
+            tmp = tmp * this->p();
+        }
+
+        return res;
+    }
 
     template<typename T>
     std::string Polynomial<T>::toString(char variable) const {
         std::stringstream res;
 
-        for (auto it = this->monoms.rbegin(); it != this->monoms.rend(); it++) {
-            T coef = it->second.toInt();
-            size_t degree = it->first;
+        for (int i = 0; i + 2 < this->values.size(); ++i) {
+            const T& coef = this->values[i];
 
-            bool printDegree = degree > 1, printVar = degree != 0;
+            if (coef > 0) {
+                if (res.rdbuf()->in_avail() > 0) {
+                    res << " + ";
+                }
 
-            if (!printVar || coef > 1) {
-                res << coef;
+                if (coef != 1) {
+                    res << coef;
+                }
+                res << variable << '^' << this->values.size() - i - 1;
             }
-            if (printDegree) {
-                res << variable << '^' << degree;
-            }
-            else if (printVar) {
-                res << variable;
-            }
+        }
 
-            auto next = it;
-            next++;
+        const T& coefPow1 = this->values.size() >= 2 ? this->values[this->values.size() - 2] : 0;
+        const T& coefPow0 = this->values.size() >= 1 ? this->values[this->values.size() - 1] : 0;
 
-            if (next != this->monoms.rend()) {
+        if (coefPow1 > 0 ) {
+            if (res.rdbuf()->in_avail() > 0) {
                 res << " + ";
             }
+
+            if (coefPow1 != 1) {
+                res << coefPow1;
+            }
+
+            res << variable;
+        }
+
+        if (coefPow0 > 0) {
+            if (res.rdbuf()->in_avail() > 0) {
+                res << " + ";
+            }
+            res << coefPow0;
         }
 
         return res.str();
     }
 
-    template<typename T>
-    T Polynomial<T>::q() const {
-        return this->q_;
-    }
+    template <typename X>
+    std::ostream &operator<<(std::ostream &os, const Polynomial<X>& polynomial) {
+        os << "Polynomial({";
 
-    template<typename T>
-    size_t Polynomial<T>::n() const {
-        return this->n_;
-    }
+        for (size_t i = 0; i < polynomial.values.size(); ++i) {
+            os << polynomial.values[i];
 
-    template<typename X>
-    std::ostream &operator<<(std::ostream &os, const Polynomial<X>& pol) {
-        os << "Polynomial(" << pol.toString()  << ", " << pol.q() << ", " << pol.n() << ", x)";
+            if (i + 1 < polynomial.values.size()) {
+                os << ", ";
+            }
+        }
+
+        os << "}, " << polynomial.p() << ")";
         return os;
     }
 
     template <typename X>
-    Polynomial<X> polAdd(const Polynomial<X>& lt, const Polynomial<X>& rt) {
-        if (lt.q() != rt.q() || rt.n() != lt.n()) {
+    Polynomial<X> add(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+        if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
 
-        std::map<size_t, Vector<X>> init_map = lt.monoms;
-
-        for (auto& monom: rt.monoms) {
-            if (init_map.count(monom.first) > 0) {
-                init_map.at(monom.first) = vecAdd(init_map.at(monom.first), monom.second);;
-            }
-            else {
-                init_map.insert(monom);
-            }
-
-            if (init_map.at(monom.first).toInt() == 0) {
-                init_map.erase(monom.first);
-            }
+        std::vector<X> values;
+        for (size_t i = 0; i < lt.n(); ++i) {
+            values.push_back(ModArithmetic<X>::add(lt.values[i], rt.values[i], lt.p()));
         }
 
-        return Polynomial<X>(init_map, lt.q(), lt.n());
+        return Polynomial<X>(values, lt.p());
     }
 
     template <typename X>
-    Polynomial<X> polSubtract(const Polynomial<X>& lt, const Polynomial<X>& rt) {
-        if (lt.q() != rt.q() || rt.n() != lt.n()) {
+    Polynomial<X> subtract(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+        if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
 
-        std::map<size_t, Vector<X>> init_map = lt.monoms;
-
-        for (auto& monom: rt.monoms) {
-            if (init_map.count(monom.first) > 0) {
-                init_map.at(monom.first) = vecSubtract(init_map.at(monom.first), monom.second);
-            }
-            else {
-                init_map.emplace(monom.first, vecSubtract(Vector<X>(0, monom.second.mod(), monom.second.length()), monom.second));
-            }
-
-            if (init_map.at(monom.first).toInt() == 0) {
-                init_map.erase(monom.first);
-            }
+        std::vector<X> values;
+        for (size_t i = 0; i < lt.n(); ++i) {
+            values.push_back(ModArithmetic<X>::subtract(lt.values[i], rt.values[i], lt.p()));
         }
 
-        return Polynomial<X>(init_map, lt.q(), lt.n());
+        return Polynomial<X>(values, lt.p());
     }
 
-    template <typename X>
-    Polynomial<X> polMultiply(const Polynomial<X>& lt, const Polynomial<X>& rt, const Vector<X>& primitive) {
-        if (lt.q() != rt.q() || rt.n() != lt.n()) {
+    template<typename X>
+    Polynomial<X> multiply(const Polynomial<X>& lt, const Polynomial<X>& rt, const Polynomial<X>& primitive) {
+        if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
 
-        if (primitive.length() != lt.q() + 2) {
-            std::stringstream msg;
+        std::vector<X> values(2 * lt.n() - 1, 0);
 
-            msg << "Primitive degree must be " << lt.q() + 1 << " for field with prime " << lt.q()
-                << ". Got " << primitive.length() - 1 << std::endl;
-
-            throw std::logic_error(msg.str());
-        }
-
-        std::map<size_t, Vector<X>> init_map;
-
-        for (const auto &ltMonom: lt.monoms) {
-            for (const auto &rtMonom: rt.monoms) {
-                size_t degree = ltMonom.first + rtMonom.first;
-                Vector<X> coef = vecPolMod(vecPolMul(ltMonom.second, rtMonom.second), primitive);
-
-                if (init_map.count(degree) > 0) {
-                    init_map.at(degree) = vecAdd(init_map.at(degree), coef);
-                } else {
-                    init_map.emplace(degree, coef);
-                }
-
-                if (init_map.at(degree).toInt() == 0) {
-                    init_map.erase(degree);
-                }
+        for (size_t i = 0; i < lt.n(); ++i) {
+            for (size_t j = 0; j < rt.n(); ++j) {
+                values[i + j] = values[i + j] + lt.values[i] * rt.values[j];
             }
         }
 
-        return Polynomial<X>(init_map, lt.q(), lt.n());
+        for (X& value: values) {
+            value = value % lt.p();
+        }
+
+        return modDivide(Polynomial<X>(values, lt.p()), primitive);
     }
 
+    template<typename X>
+    Polynomial<X> modDivide(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+        if (lt.p() != rt.p()) {
+            throw std::invalid_argument("Mods are not equal");
+        }
+
+        auto tmp = lt;
+
+        while (tmp.n() >= rt.n()) {
+            while (tmp.values[0] != 0) {
+                auto multiplier = tmp.values[0] / rt.values[0];
+
+                if (tmp.values[0] % rt.values[0] != 0) {
+                    multiplier = multiplier + 1;
+                }
+
+                for (size_t i = 0; i < rt.n(); ++i) {
+                    tmp.values[i] = ModArithmetic<X>::subtract(tmp.values[i], multiplier * rt.values[i], lt.p());
+                }
+            }
+
+            tmp.values.erase(tmp.values.begin());
+        }
+
+        return tmp;
+    }
 }
+
 
 
 #endif //ABSTRACT_ALGEBRA2_POLYNOMIAL_H

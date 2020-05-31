@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include "GaloisField/Polynomial.h"
-#include "GaloisField/Vector.h"
 #include "utils.h"
 #include "string.h"
 
