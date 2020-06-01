@@ -10,49 +10,84 @@
 #include <map>
 #include "ModArithmetic/ModArithmetic.h"
 #include "utils.h"
+#include <utility>
 
 
 namespace gf {
-    template <typename T>
+    template<typename T>
     class Polynomial {
         std::vector<T> values;
         T p_;
     public:
-        Polynomial(const std::initializer_list<T>&, const T&);
-        Polynomial(const std::vector<T>&, const T&);
-        Polynomial(T, const T&, size_t);
-        Polynomial(const std::string&, const T&, size_t, char variable=DEFAULT_VAR);
-        size_t n() const;
-        T p() const;
-        T toInt() const;
-        std::string toString(char variable=DEFAULT_VAR) const;
+        Polynomial(const std::initializer_list<T> &, const T &);
 
-        template <typename X>
-        friend std::ostream& operator<<(std::ostream&, const Polynomial<X>&);
-        template <typename X>
-        friend Polynomial<X> add(const Polynomial<X>&, const Polynomial<X>&);
-        template <typename X>
-        friend Polynomial<X> subtract(const Polynomial<X>&, const Polynomial<X>&);
-        template <typename X>
-        friend Polynomial<X> multiply(const Polynomial<X>&, const Polynomial<X>&, const Polynomial<X>&);
-        template <typename X>
-        friend Polynomial<X> modDivide(const Polynomial<X>&, const Polynomial<X>&);
-        template <typename X>
+        Polynomial(const std::vector<T> &, const T &);
+
+        Polynomial(T, const T &, size_t);
+
+        Polynomial(const std::string &, const T &, size_t, char variable = DEFAULT_VAR);
+
+        size_t n() const;
+
+        T p() const;
+
+        T toInt() const;
+
+        std::string toString(char variable = DEFAULT_VAR) const;
+
+        template<typename X>
+        friend std::ostream &operator<<(std::ostream &, const Polynomial<X> &);
+
+        template<typename X>
+        Polynomial &operator=(const Polynomial<X> &object) {
+            this->values = object.values;
+            return *this;
+        }
+
+        template<typename X>
+        friend Polynomial<X> add(const Polynomial<X> &, const Polynomial<X> &);
+
+        template<typename X>
+        friend Polynomial<X> subtract(const Polynomial<X> &, const Polynomial<X> &);
+
+        template<typename X>
+        friend Polynomial<X> multiply(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
+
+        template<typename X>
+        friend Polynomial<X> modDivide(const Polynomial<X> &, const Polynomial<X> &);
+
+        template<typename X>
         friend Polynomial<X> MakeMonic(Polynomial<X>);
-        template <typename X>
+
+        template<typename X>
         friend Polynomial<X> Derivative(Polynomial<X>);
-        template <typename X>
+
+        template<typename X>
         friend X PointValue(Polynomial<X>, X);
+
+        template<typename X>
+        friend X modDivisionKoef(X, X, int);
+
+        template<typename X>
+        friend std::pair<Polynomial<X>, Polynomial<X>>
+        divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
+
+        template<typename X>
+        friend X sumPow(Polynomial<X> &poly, int maxPow);
+
+        template<typename X>
+        friend std::pair<X, X> positionDivide(Polynomial<X> &poly, int pow);
+
     };
 
     template<typename T>
-    Polynomial<T>::Polynomial(const std::initializer_list<T>& initValues, const T& p) : values(initValues), p_(p) {}
+    Polynomial<T>::Polynomial(const std::initializer_list<T> &initValues, const T &p) : values(initValues), p_(p) {}
 
-    template <typename T>
-    Polynomial<T>::Polynomial(const std::vector<T>& values, const T& p) : values(values), p_(p) {}
+    template<typename T>
+    Polynomial<T>::Polynomial(const std::vector<T> &values, const T &p) : values(values), p_(p) {}
 
-    template <typename T>
-    Polynomial<T>::Polynomial(T number, const T& mod, size_t len) : p_(mod) {
+    template<typename T>
+    Polynomial<T>::Polynomial(T number, const T &mod, size_t len) : p_(mod) {
         while (number > 0) {
             T tmp = number % mod;
             number = number / mod;
@@ -70,28 +105,29 @@ namespace gf {
         std::reverse(this->values.begin(), this->values.end());
     }
 
-    template <typename T>
-    Polynomial<T>::Polynomial(const std::string& polyForm, const T& p, size_t n, char variable) : p_(p) {
+    template<typename T>
+    Polynomial<T>::Polynomial(const std::string &polyForm, const T &p, size_t n, char variable) : p_(p) {
         std::map<size_t, T> monoms = toPolynomial<T>(polyForm, variable);
 
         this->values = std::vector<T>(n);
 
-        for (auto& monom: monoms) {
+        for (auto &monom: monoms) {
             this->values[this->values.size() - monom.first - 1] = monom.second;
         }
     }
 
-    template <typename T>
+    template<typename T>
     size_t Polynomial<T>::n() const {
         return this->values.size();
     }
 
-    template <typename T>
+    template<typename T>
     T Polynomial<T>::p() const {
         return this->p_;
     }
 
-    template <typename T>
+
+    template<typename T>
     T Polynomial<T>::toInt() const {
         T res = 0, tmp = 1;
 
@@ -108,7 +144,7 @@ namespace gf {
         std::stringstream res;
 
         for (int i = 0; i + 2 < this->values.size(); ++i) {
-            const T& coef = this->values[i];
+            const T &coef = this->values[i];
 
             if (coef > 0) {
                 if (res.rdbuf()->in_avail() > 0) {
@@ -122,10 +158,10 @@ namespace gf {
             }
         }
 
-        const T& coefPow1 = this->values.size() >= 2 ? this->values[this->values.size() - 2] : 0;
-        const T& coefPow0 = this->values.size() >= 1 ? this->values[this->values.size() - 1] : 0;
+        const T &coefPow1 = this->values.size() >= 2 ? this->values[this->values.size() - 2] : 0;
+        const T &coefPow0 = this->values.size() >= 1 ? this->values[this->values.size() - 1] : 0;
 
-        if (coefPow1 > 0 ) {
+        if (coefPow1 > 0) {
             if (res.rdbuf()->in_avail() > 0) {
                 res << " + ";
             }
@@ -147,8 +183,8 @@ namespace gf {
         return res.str();
     }
 
-    template <typename X>
-    std::ostream &operator<<(std::ostream &os, const Polynomial<X>& polynomial) {
+    template<typename X>
+    std::ostream &operator<<(std::ostream &os, const Polynomial<X> &polynomial) {
         os << "Polynomial({";
 
         for (size_t i = 0; i < polynomial.values.size(); ++i) {
@@ -163,8 +199,8 @@ namespace gf {
         return os;
     }
 
-    template <typename X>
-    Polynomial<X> add(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+    template<typename X>
+    Polynomial<X> add(const Polynomial<X> &lt, const Polynomial<X> &rt) {
         if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
@@ -177,8 +213,8 @@ namespace gf {
         return Polynomial<X>(values, lt.p());
     }
 
-    template <typename X>
-    Polynomial<X> subtract(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+    template<typename X>
+    Polynomial<X> subtract(const Polynomial<X> &lt, const Polynomial<X> &rt) {
         if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
@@ -192,7 +228,7 @@ namespace gf {
     }
 
     template<typename X>
-    Polynomial<X> multiply(const Polynomial<X>& lt, const Polynomial<X>& rt, const Polynomial<X>& primitive) {
+    Polynomial<X> multiply(const Polynomial<X> &lt, const Polynomial<X> &rt, const Polynomial<X> &primitive) {
         if (lt.n() != rt.n() || lt.p() != rt.p()) {
             throw std::invalid_argument("Polynomials must be in the same field");
         }
@@ -205,7 +241,7 @@ namespace gf {
             }
         }
 
-        for (X& value: values) {
+        for (X &value: values) {
             value = value % lt.p();
         }
 
@@ -213,7 +249,7 @@ namespace gf {
     }
 
     template<typename X>
-    Polynomial<X> modDivide(const Polynomial<X>& lt, const Polynomial<X>& rt) {
+    Polynomial<X> modDivide(const Polynomial<X> &lt, const Polynomial<X> &rt) {
         if (lt.p() != rt.p()) {
             throw std::invalid_argument("Mods are not equal");
         }
@@ -240,15 +276,14 @@ namespace gf {
     }
 
     /* Creates Monic Polynomial from given Polynomial */
-    template <typename X>
+    template<typename X>
     Polynomial<X> MakeMonic(gf::Polynomial<X> pol) {
         std::vector<X> init_vec;
         X max_coef = pol.values[0];
         X p = pol.p();
         if (max_coef == 1) {
             return pol;
-        }
-        else {
+        } else {
             for (int i = 0; i < pol.n(); i++) {
                 init_vec.push_back(ModArithmetic<X>::divide(pol.values[i], max_coef, p));
             }
@@ -257,8 +292,8 @@ namespace gf {
     }
 
     /* Creates Derivative Polynomial from given Polynomial */
-    template <typename X>
-    gf::Polynomial<X>  Derivative(gf::Polynomial<X> pol) {
+    template<typename X>
+    gf::Polynomial<X> Derivative(gf::Polynomial<X> pol) {
         std::vector<X> init_vec;
         X p = pol.p();
         for (int i = 0; i < pol.n() - 1; i++) {
@@ -267,8 +302,8 @@ namespace gf {
         return gf::Polynomial<X>(init_vec, p);
     }
 
-    template <typename X>
-    long int  ModularPow(X base, long int degree, X mod) {
+    template<typename X>
+    long int ModularPow(X base, long int degree, X mod) {
         if (degree == 0) return 1;
         X res = base;
         for (long int i = 1; i < degree; i++) {
@@ -278,17 +313,78 @@ namespace gf {
     }
 
     /*Finds polynomial value at given point  */
-    template <typename X>
-    X  PointValue(gf::Polynomial<X> pol, X x) {
+    template<typename X>
+    X PointValue(gf::Polynomial<X> pol, X x) {
         std::vector<X> init_vec;
         X p = pol.p();
         X result = 0;
         for (int i = 0; i < pol.n(); i++) {
-            result = ModArithmetic<X>::add(result, ModArithmetic<X>::multiply(pol.values[i], gf::ModularPow(x, pol.n() - i - 1, p), p), p);
+            result = ModArithmetic<X>::add(result, ModArithmetic<X>::multiply(pol.values[i],
+                                                                              gf::ModularPow(x, pol.n() - i - 1, p), p),
+                                           p);
         }
         return result;
     }
 
+<<<<<<< HEAD
+    /**
+     * Function that returns coef of quotient
+     *
+     * @tparam X
+     * @param dividentKoef
+     * @param divisorKoef
+     * @param mod
+     * @return
+     */
+    template<typename X>
+    X modDivisionKoef(X dividentKoef, X divisorKoef, int mod) {
+        for (X count = 1; count <= mod; count++) {
+            if ((count * divisorKoef) % mod == dividentKoef)
+                return count;
+        }
+    }
+    /**
+     * Function that returns sum of degrees
+     *
+     * @tparam X
+     * @param poly dividend poly
+     * @param maxPow max degree of divisor
+     * @return
+     */
+    template<typename X>
+    X sumPow(Polynomial<X> &poly, int maxPow) {
+        X sum;
+        for (int i = 0; i <= maxPow; i++) {
+            sum += poly.values[i];
+        }
+        return sum;
+    }
+    /**
+     * Function that returns max divident degree and quotient degree
+     *
+     * @tparam X
+     * @param poly
+     * @param pow
+     * @return
+     */
+    template<typename X>
+    std::pair<X, X> positionDivide(Polynomial<X> &poly, int pow) {
+        std::pair<X, X> finish;
+        X count = 0;
+        while (poly.values[count] == 0) {
+            count++;
+            if (count == poly.values.size())
+                break;
+        }
+        finish.first = count;
+        std::map<X, X> pows;
+        for (int i = 0; i < poly.values.size(); i++) {
+            int size = poly.values.size();
+            pows[i] = size - i - 1;
+        }
+        int divident_pow = pows[count];
+        int divisor_pow = pows[pow];
+=======
     unsigned int CountRoots(gf::Polynomial<unsigned int> P)
     {
         std::string s = P.toString();
@@ -352,7 +448,65 @@ namespace gf {
     }
 
 }
+>>>>>>> de45b15c2b934810011cd6b0272b362754fc3db0
 
+        int result_pow = divident_pow - divisor_pow;
+
+        for (auto i: pows) {
+            if (i.second == result_pow) {
+                finish.second = i.first;
+                break;
+            }
+        }
+        return finish;
+    }
+
+    /**
+     * Function that divide polynoms in Field
+     *
+     * @tparam X
+     * @param divident
+     * @param divisor
+     * @param primitive
+     * @return
+     */
+    template<typename X>
+    std::pair<Polynomial<X>, Polynomial<X>>
+    divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
+        if (divident.values[0] == 0 && divisor.values[0] != 0) {
+            throw std::invalid_argument("Pow of divident must be higher ");
+        }
+        Polynomial<X> tet(divident.values, divident.p());
+        size_t sizeDivident = divident.values.size();
+        std::vector<X> quotientVec(sizeDivident, 0);
+        int iterDivisor = 0;
+        for (int j = 0; j < sizeDivident; ++j) {
+            if (divisor.values[j] != 0) {
+                break;
+            } else {
+                iterDivisor++;
+            }
+        }
+        while (sumPow(tet, iterDivisor) != 0) {
+            std::vector<X> tempDivident(sizeDivident, 0);
+            std::pair<X, X> pow_and_koef = positionDivide(tet, iterDivisor);
+            int modKoef = modDivisionKoef(tet.values[pow_and_koef.first], divisor.values[iterDivisor], divident.p_);
+            tempDivident.at(pow_and_koef.second) = modKoef;
+            quotientVec = VecAdd(quotientVec, tempDivident);
+            Polynomial<X> mult(tempDivident, divident.p_);
+            Polynomial<X> result = multiply(divisor, mult, primitive);
+            Polynomial<X> substr = subtract(tet, result);
+            tet = substr;
+        }
+        Polynomial<X> quotient(quotientVec, divident.p_);
+        std::pair<Polynomial<X>, Polynomial<X>> quotientAndRemainder(quotient, tet);
+
+        return quotientAndRemainder;
+
+    }
+
+
+}
 
 
 #endif //ABSTRACT_ALGEBRA2_POLYNOMIAL_H
