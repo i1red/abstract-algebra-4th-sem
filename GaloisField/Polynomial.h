@@ -326,7 +326,7 @@ namespace gf {
         return result;
     }
 
-<<<<<<< HEAD
+
     /**
      * Function that returns coef of quotient
      *
@@ -384,7 +384,17 @@ namespace gf {
         }
         int divident_pow = pows[count];
         int divisor_pow = pows[pow];
-=======
+        int result_pow = divident_pow - divisor_pow;
+
+        for (auto i: pows) {
+            if (i.second == result_pow) {
+                finish.second = i.first;
+                break;
+            }
+        }
+        return finish;
+    }
+
     unsigned int CountRoots(gf::Polynomial<unsigned int> P)
     {
         std::string s = P.toString();
@@ -447,19 +457,9 @@ namespace gf {
         return q - 1 - r;
     }
 
-}
->>>>>>> de45b15c2b934810011cd6b0272b362754fc3db0
 
-        int result_pow = divident_pow - divisor_pow;
 
-        for (auto i: pows) {
-            if (i.second == result_pow) {
-                finish.second = i.first;
-                break;
-            }
-        }
-        return finish;
-    }
+
 
     /**
      * Function that divide polynoms in Field
