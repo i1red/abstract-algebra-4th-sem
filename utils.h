@@ -66,4 +66,12 @@ std::map<size_t, T> toPolynomial(const std::string& strRepresentation, char vari
     return monoms;
 }
 
+std::vector<int> VecAdd( std::vector<int>& v1,  std::vector<int>& v2){
+std::vector<int> temp(v1.size(),0);
+for(int iter=0; iter<v1.size(); iter++ ){
+    temp[iter] = v1[iter] + v2[iter];
+}
+return temp;
+}
+
 #endif //ABSTRACT_ALGEBRA2_UTILS_H

@@ -67,13 +67,40 @@ namespace test {
         cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(11));
         cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(12));
     }
+    void DividePoly(){
+        gf:: Polynomial<int> first("6x^5 + 3x^4 + 6x^3 + 5x^2 + 6x + 3" , 7, 6);
+        gf::Polynomial<int>second("4x^3 + x^2 + 3x + 1", 7,6);
+        gf::Polynomial<int> f8primitive("x^7 + x^4 + 3x^3 + x + 5", 7, 7);
+
+        gf:: Polynomial<int> third("3x^2 + 3x + 2" , 5, 3);
+        gf::Polynomial<int>fourth("2x + 3", 5,3);
+        gf::Polynomial<int> f9primitive("x^3 + 3x + 2", 5, 4);
+
+        gf:: Polynomial<int> sixth("x^5+x^3+2x^2+x+2" , 3, 6);
+        gf::Polynomial<int>seventh("x^3+2x^2+x+1", 3,6);
+        gf::Polynomial<int> f7primitive("x^8+x^4+2x^3+x+2", 3, 7);
+
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res1 = gf::divide(third,fourth,f9primitive);
+        std::cout<<"Quotient: " << res1.first  << " Remainder: " << res1.second << std::endl;
+
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res2 = gf::divide(first,second,f8primitive);
+        std::cout<<"Quotient: " << res2.first  << " Remainder: " << res2.second << std::endl;
+
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res3 = gf::divide(sixth,seventh,f7primitive);
+        std::cout<<"Quotient: " << res3.first  << " Remainder: " << res3.second << std::endl;
+
+    }
 
 }
 
 
 int main() {
 
-    test::testCalculatingCyclicPolynomial();
-    test::run();
+    //test::testCalculatingCyclicPolynomial();
+    //test::run();
+    test::DividePoly();
+
+
+
     return 0;
 }
