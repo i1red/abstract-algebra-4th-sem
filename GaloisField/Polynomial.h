@@ -69,8 +69,7 @@ namespace gf {
         friend X modDivisionKoef(X, X, int);
 
         template<typename X>
-        friend std::pair<Polynomial<X>, Polynomial<X>>
-        divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
+        friend std::pair<Polynomial<X>, Polynomial<X>>divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
 
         template<typename X>
         friend X sumPow(Polynomial<X> &poly, int maxPow);
@@ -471,8 +470,7 @@ namespace gf {
      * @return
      */
     template<typename X>
-    std::pair<Polynomial<X>, Polynomial<X>>
-    divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
+    std::pair<Polynomial<X>, Polynomial<X>> divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
         if (divident.values[0] == 0 && divisor.values[0] != 0) {
             throw std::invalid_argument("Pow of divident must be higher ");
         }
