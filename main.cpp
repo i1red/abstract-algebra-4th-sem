@@ -67,6 +67,22 @@ namespace test {
         cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(11));
         cyclicPolinomial->printPoly(cyclicPolinomial->calculatePolynomial(12));
     }
+    void DividePoly(){
+        gf:: Polynomial<int> first("2x^5 + x^4 + 4x + 3" , 5, 6);
+        gf::Polynomial<int>second("3x^2 + 1", 5,6);
+        gf::Polynomial<int> f6primitive("x^6+x^4+2x^3+x+2", 5, 7);
+
+        gf:: Polynomial<int> third("3x^2 + 3x + 2" , 5, 3);
+        gf::Polynomial<int>fourth("2x + 3", 5,3);
+        gf::Polynomial<int> f9primitive("x^3 + 3x + 2", 5, 4);
+
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res1 = gf::divide(first,second,f6primitive);
+        std::cout<<"Quotient: " << res1.first  << " Remainder: " << res1.second << std::endl;
+
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res2 = gf::divide(third,fourth,f9primitive);
+        std::cout<<"Quotient: " << res2.first  << " Remainder: " << res2.second << std::endl;
+
+    }
 
 }
 
@@ -218,5 +234,6 @@ int main() {
 //    test::testCalculatingCyclicPolynomial();
     //test::run();
     ui::interactionLoop();
+
     return 0;
 }
