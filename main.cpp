@@ -71,33 +71,144 @@ namespace test {
 }
 
 namespace ui {
+
+    int p = 11, n = 20;
+
+    void newLine() {
+        std::cout << "->";
+    }
+
     void help() {
-        std::cout << "Enter command with the needed arguments from the list below\n";
-        std::cout << "\t->smth ARG1 ARG2\n";
-        std::cout << "\t->smth ARG1 ARG2\n";
+        std::cout << "Quick guide for using our software:\n";
+        std::cout << "\tFirst of all, you need to enter value of field in which you will work,\n";
+        std::cout << "\tthen order of cyclic polynomial, decomposition of which will extend field,\n";
+        std::cout << "\tafter this steps you must choose one of provided polynomials who will extend\n";
+        std::cout << "\tgiven field. Finally, you can use commands from the list below\n";
+        std::cout << "\tfor executing needed operations\n\n";
+        std::cout << "Existing commands:\n";
+        std::cout << "\t->enter\n";
+        std::cout << "\t->add\n";
+        std::cout << "\t->subtract\n";
+        std::cout << "\t->multiply\n";
+        std::cout << "\t->derivative\n";
+        std::cout << "\t->monic\n";
+        std::cout << "\t->point value\n";
+        std::cout << "\t->roots\n";
+        std::cout << "\t->amount of roots\n";
         std::cout << "\t->quit\n";
         std::cout << "\t\tfor exit\n";
     }
 
-    void execute(std::string command) {
-        double arg1, arg2;
-        std::cin >> arg1 >> arg2;
-        if (command == "add") std::cout << arg1 + arg2;
-        else std::cout << "error";
+    int readIntValue(const std::string& textToShow) {
+        int buffer;
+        std::cout << textToShow << std::endl;
+        newLine();
+        std::cin >> buffer;
+
+        while (std::cin.fail()) {
+            std::cin.clear(); // clear input buffer to restore cin to a usable state
+            std::cin.ignore(INT_MAX, '\n'); // ignore last input
+            std::cout << "You can only enter numbers." << std::endl;
+            std::cout << textToShow << std::endl;
+            std::cin >> buffer;
+        }
+
+        return buffer;
+    }
+
+    std::string readStringValue(const std::string& textToShow) {
+        std::string buffer;
+        std::cout << textToShow << std::endl;
+        newLine();
+        std::cin >> buffer;
+
+        while (std::cin.fail()) {
+            std::cin.clear(); // clear input buffer to restore cin to a usable state
+            std::cin.ignore(INT_MAX, '\n'); // ignore last input
+            std::cout << "You can only enter numbers." << std::endl;
+            std::cout << textToShow << std::endl;
+            std::cin >> buffer;
+        }
+
+        return buffer;
+    }
+
+    gf::Polynomial<int> getPolynomialByInput(std::string text) {
+        return gf::Polynomial<int>(readStringValue(text), p, n);
+    }
+
+    void execute(const std::string& command) {
+        if (command == "enter") {
+            int arg1, arg2;
+            arg1 = readIntValue("Enter the field");
+            arg2 = readIntValue("Enter the n");
+            std::cout << arg1 + arg2 << std::endl;
+
+        } else if (command == "add") {
+            gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for addition");
+            gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for addition");
+            value1 = gf::add(value1, value2);
+            std::cout << value1.toString() << std::endl;
+
+        } else if (command == "subtract") {
+            gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for subtracting");
+            gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for subtracting");
+            value1 = gf::subtract(value1, value2);
+            std::cout << value1.toString() << std::endl;
+
+        } else if (command == "multiply") {
+            gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for multiplying");
+            gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for multiplying");
+//            value1 = gf::multiply(value1, value2, );
+            std::cout << value1.toString() << std::endl;
+
+        } else if (command == "derivative") {
+            gf::Polynomial<int> value = getPolynomialByInput("Enter polynomial for getting derivative");
+            value = gf::Derivative(value);
+            std::cout << value.toString() << std::endl;
+
+        } else if (command == "monic") {
+            gf::Polynomial<int> value = getPolynomialByInput("Enter polynomial for getting monic");
+            value = gf::MakeMonic(value);
+            std::cout << value.toString() << std::endl;
+
+        } else if (command == "point value") {
+            gf::Polynomial<int> value = getPolynomialByInput("Enter polynomial for getting point value of this polynomial");
+//            value = gf::PointValue(value, );
+            std::cout << value.toString() << std::endl;
+
+        } else if (command == "roots") {
+            std::string pol;
+//            pol = readStringValue("Enter polynomial for getting point value of this polynomial");
+//            gf::Polynomial<int> value = gf::Polynomial<int>(pol, p, n);
+//            value = gf::PointValue(value, );
+//            std::cout << value.toString() << std::endl;
+
+        } else if (command == "amount of roots") {
+            std::string pol;
+//            pol = readStringValue("Enter polynomial for getting point value of this polynomial");
+//            gf::Polynomial<int> value = gf::Polynomial<int>(pol, p, n);
+//            value = gf::PointValue(value, );
+//            std::cout << value.toString() << std::endl;
+
+        } else {
+            std::cout << "error" << std::endl;
+        }
     }
 
     void interactionLoop() {
         std::string command;
-        ui::help();
 
         while (true) {
+            std::cout << "Enter the command or help for getting information" << std::endl;
             std::cout << "->";
             std::cin >> command;
             if (command == "quit") break;
+            else if (command == "help") ui::help();
             else execute(command);
         }
 
-        std::cout << "bye";
+        std::cout << "Goodbye";
     };
 }
 
