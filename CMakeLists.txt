@@ -16,4 +16,4 @@ add_executable(abstract_algebra2 main.cpp
                ModArithmetic/ModArithmetic.h
                BigInt/bigmath.h
         GaloisField/Polynomial.h
-        utils.h CyclicPolynomial/CyclicPolynomial.cpp CyclicPolynomial/CyclicPolynomial.h CountRoots/CountRoots.h)
+        utils.h CyclicPolynomial/CyclicPolynomial.cpp CyclicPolynomial/CyclicPolynomial.h)

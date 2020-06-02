@@ -193,18 +193,11 @@ namespace ui {
 //            value = gf::PointValue(value, );
             std::cout << value.toString() << std::endl;
 
-        } else if (command == "roots") {
-            std::string pol;
-//            pol = readStringValue("Enter polynomial for getting point value of this polynomial");
-//            gf::Polynomial<int> value = gf::Polynomial<int>(pol, p, n);
-//            value = gf::PointValue(value, );
-//            std::cout << value.toString() << std::endl;
-
         } else if (command == "amount of roots") {
             std::string pol;
-//            pol = readStringValue("Enter polynomial for getting point value of this polynomial");
-//            gf::Polynomial<int> value = gf::Polynomial<int>(pol, p, n);
-//            value = gf::PointValue(value, );
+            pol = readStringValue("Enter polynomial for getting point value of this polynomial");
+            gf::Polynomial<int> value = gf::Polynomial<int>(pol, p, n);
+//            value = gf::CountRoots(value);
 //            std::cout << value.toString() << std::endl;
 
         } else {
