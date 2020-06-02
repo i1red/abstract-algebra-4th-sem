@@ -179,7 +179,8 @@ namespace gf {
             res << coefPow0;
         }
 
-        return res.str();
+        std::string result = res.str();
+        return result == "" ? "0" : result;
     }
 
     template<typename X>

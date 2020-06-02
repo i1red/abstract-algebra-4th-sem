@@ -90,13 +90,7 @@ namespace test {
 int main() {
 
     //test::testCalculatingCyclicPolynomial();
-    test::DividePoly();
-    //test::run();
-
-
-
-
-
+    test::run();
 
     return 0;
 }
