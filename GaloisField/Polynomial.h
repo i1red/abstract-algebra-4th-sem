@@ -394,14 +394,14 @@ namespace gf {
         return finish;
     }
 
-    unsigned int CountRoots(gf::Polynomial<unsigned int> P)
+    int CountRoots(gf::Polynomial<int> P)
     {
         std::string s = P.toString();
-        unsigned int q = P.p();
-        std::map<size_t, unsigned int> pol = toPolynomial<unsigned int>(s,'x');
+        int q = P.p();
+        std::map<size_t, int> pol = toPolynomial<int>(s,'x');
         auto itr = pol.begin();
 
-        unsigned int arr[q-1][q-1];
+        int arr[q-1][q-1];
         for(auto i = 0; i < q-1; i++)
             if (itr->first == i && itr!=pol.end())
             {
@@ -425,8 +425,8 @@ namespace gf {
             std::cout<<std::endl;
         }*/
 
-        unsigned int n = q-1;
-        unsigned int r = 0;
+        int n = q-1;
+        int r = 0;
 
         for(auto i = 0; i < n; i++)
         {
