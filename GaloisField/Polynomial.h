@@ -11,6 +11,7 @@
 #include "ModArithmetic/ModArithmetic.h"
 #include "utils.h"
 #include <utility>
+#include <CyclicPolynomial/CyclicPolynomial.h>
 
 
 namespace gf {
@@ -69,7 +70,8 @@ namespace gf {
         friend X modDivisionKoef(X, X, int);
 
         template<typename X>
-        friend std::pair<Polynomial<X>, Polynomial<X>>divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
+        friend std::pair<Polynomial<X>, Polynomial<X>>
+        divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
 
         template<typename X>
         friend X sumPow(Polynomial<X> &poly, int maxPow);
@@ -330,7 +332,7 @@ namespace gf {
      * Function that returns coef of quotient
      *
      * @tparam X
-     * @param dividentKoef
+     * @param dividentKf
      * @param divisorKoef
      * @param mod
      * @return
@@ -342,6 +344,7 @@ namespace gf {
                 return count;
         }
     }
+
     /**
      * Function that returns sum of degrees
      *
@@ -358,6 +361,7 @@ namespace gf {
         }
         return sum;
     }
+
     /**
      * Function that returns max divident degree and quotient degree
      *
@@ -394,27 +398,23 @@ namespace gf {
         return finish;
     }
 
-    unsigned int CountRoots(gf::Polynomial<unsigned int> P)
-    {
+    int CountRoots(gf::Polynomial<int> P) {
         std::string s = P.toString();
-        unsigned int q = P.p();
-        std::map<size_t, unsigned int> pol = toPolynomial<unsigned int>(s,'x');
+        int q = P.p();
+        std::map<size_t, int> pol = toPolynomial<int>(s, 'x');
         auto itr = pol.begin();
 
-        unsigned int arr[q-1][q-1];
-        for(auto i = 0; i < q-1; i++)
-            if (itr->first == i && itr!=pol.end())
-            {
+        int arr[q - 1][q - 1];
+        for (auto i = 0; i < q - 1; i++)
+            if (itr->first == i && itr != pol.end()) {
                 arr[0][i] = itr->second;
                 itr++;
-            }
-            else
+            } else
                 arr[0][i] = 0;
-        for(auto i = 1; i < q-1; i++)
-        {
-            for(auto j = 0; j < q-2; j++)
-                arr[i][j] = arr[i-1][j+1];
-            arr[i][q-2] = arr[i-1][0];
+        for (auto i = 1; i < q - 1; i++) {
+            for (auto j = 0; j < q - 2; j++)
+                arr[i][j] = arr[i - 1][j + 1];
+            arr[i][q - 2] = arr[i - 1][0];
         }
 
 
@@ -425,24 +425,22 @@ namespace gf {
             std::cout<<std::endl;
         }*/
 
-        unsigned int n = q-1;
-        unsigned int r = 0;
+        int n = q - 1;
+        int r = 0;
 
-        for(auto i = 0; i < n; i++)
-        {
-            for(auto j = i; j < n; j++)
-                if (arr[j][i]>0)
-                {
+        for (auto i = 0; i < n; i++) {
+            for (auto j = i; j < n; j++)
+                if (arr[j][i] > 0) {
                     r++;
-                    for(auto temp = i; temp < n; temp++)
-                        std::swap(arr[i][temp],arr[j][temp]);
+                    for (auto temp = i; temp < n; temp++)
+                        std::swap(arr[i][temp], arr[j][temp]);
                     break;
                 }
 
-            for(auto j = i + 1; j < n; j++)
+            for (auto j = i + 1; j < n; j++)
                 if (arr[j][i])
-                    while(arr[j][i] != 0)
-                        for(auto temp = i; temp < n; temp++)
+                    while (arr[j][i] != 0)
+                        for (auto temp = i; temp < n; temp++)
                             arr[j][temp] = (arr[j][temp] + arr[i][temp]) % q;
         }
 
@@ -457,9 +455,6 @@ namespace gf {
     }
 
 
-
-
-
     /**
      * Function that divide polynoms in Field
      *
@@ -470,7 +465,8 @@ namespace gf {
      * @return
      */
     template<typename X>
-    std::pair<Polynomial<X>, Polynomial<X>> divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
+    std::pair<Polynomial<X>, Polynomial<X>>
+    divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
         if (divident.values[0] == 0 && divisor.values[0] != 0) {
             throw std::invalid_argument("Pow of divident must be higher ");
         }
@@ -501,6 +497,41 @@ namespace gf {
 
         return quotientAndRemainder;
 
+    }
+
+    std::vector<gf::Polynomial<int>> getAllIrreduciblePolynomials(int p, int n, int amount) {
+
+        std::vector<gf::Polynomial<int>> result, buffer;
+        gf::Polynomial<int> *cyclic;
+
+        int num = pow(p, n) - 1;
+
+        for (int m = 1; m <= num; ++m) {
+            if ((num % m) == 0) {
+                cyclic = new gf::Polynomial<int>((new CyclicPolynomial())->calculatePolynomial(n), p);
+
+                if (cyclic->n() < n) continue;
+
+                if (std::__gcd(p, m)) {
+//                    buffer = cyclic.factorizeCyclotomicRi(m);
+                } else {
+                    gf::Polynomial<int> temp = gf::Derivative(*cyclic);
+//                    temp = gcd(cyclic, temp);
+//                    buffer = berlekemp(temp);
+                }
+
+                for (auto &irreduciblePolynomial : buffer) {
+                    if (irreduciblePolynomial.n() == n) {
+                        if (result.size() < amount) result.push_back(irreduciblePolynomial);
+                        else return result;
+                    }
+                }
+
+            }
+        }
+
+//        return result;
+        return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1), gf::Polynomial<int>("8x^3+4x^2+1", p, n)};
     }
 
 
