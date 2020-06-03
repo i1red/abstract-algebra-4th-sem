@@ -511,14 +511,12 @@ namespace gf {
             if ((num % m) == 0) {
                 cyclic = new gf::Polynomial<int>((new CyclicPolynomial())->calculatePolynomial(n), p);
 
-                if (cyclic->n() < n) continue;
-
                 if (std::__gcd(p, m)) {
-//                    buffer = cyclic.factorizeCyclotomicRi(m);
+//                    buffer = decompositionWithRi(m);
                 } else {
                     gf::Polynomial<int> temp = gf::Derivative(*cyclic);
 //                    temp = gcd(cyclic, temp);
-//                    buffer = berlekemp(temp);
+//                    buffer = berlekamp(temp);
                 }
 
                 for (auto &irreduciblePolynomial : buffer) {

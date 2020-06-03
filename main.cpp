@@ -116,6 +116,7 @@ namespace ui {
         std::cout << "\t->point value\n";
         std::cout << "\t->roots\n";
         std::cout << "\t->countRoots\n";
+        std::cout << "\t->cyclic\n";
         std::cout << "\t->quit\n";
         std::cout << "\t\tfor exit\n";
     }
@@ -227,7 +228,7 @@ namespace ui {
         } else if (command == "multiply") {
             gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for multiplying", n);
             gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for multiplying", n);
-            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for division", n + 1);
+            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for multiplying", n + 1);
             value1 = gf::multiply(value1, value2, primitive);
             std::cout << value1.toString() << std::endl;
 
@@ -259,6 +260,11 @@ namespace ui {
             std::pair<gf::Polynomial<int>, gf::Polynomial<int>> pair = gf::divide(value1, value2, primitive);
             std::cout << "Quotient: " << pair.first.toString() << std::endl;
             std::cout << "Reminder: " << pair.second.toString() << std::endl;
+
+        } else if (command == "cyclic") {
+            int value = readIntValue("Enter n");
+            gf::Polynomial<int> cyclic = gf::Polynomial<int>((new CyclicPolynomial()) -> calculatePolynomial(value), p);
+            std::cout << cyclic.toString() << std::endl;
 
         } else {
             std::cout << "Error: command '" << command << "' doesn't exist!" << std::endl;
