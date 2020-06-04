@@ -296,7 +296,13 @@ namespace gf {
     template<typename X>
     Polynomial<X> MakeMonic(gf::Polynomial<X> pol) {
         std::vector<X> init_vec;
-        X max_coef = pol.values[0];
+        X max_coef = 0;
+        for (int i = 0; i < pol.n(); i++) {
+            if (pol.values[i] != 0) {
+                max_coef = pol.values[i];
+                break;
+            }
+        }
         X p = pol.p();
         if (max_coef == 1) {
             return pol;
