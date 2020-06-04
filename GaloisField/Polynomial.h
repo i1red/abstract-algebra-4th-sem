@@ -256,25 +256,40 @@ namespace gf {
             throw std::invalid_argument("Mods are not equal");
         }
 
-        auto tmp = lt;
+        auto tmpLt = lt;
+        auto tmpRt = rt;
+        std::vector<X> rtValues;
+        size_t k = 0;
+        while (k < tmpRt.n() && tmpRt.values[k] == 0) {
+            ++k;
+        }
+        while (k < tmpRt.n()) {
+            rtValues.push_back(tmpRt.values[k]);
+            ++k;
+        }
 
-        while (tmp.n() >= rt.n()) {
-            while (tmp.values[0] != 0) {
-                auto multiplier = tmp.values[0] / rt.values[0];
+        if (rtValues.size() == 0) {
+            throw std::logic_error("Zero division error");
+        }
+        tmpRt.values = rtValues;
 
-                if (tmp.values[0] % rt.values[0] != 0) {
+        while (tmpLt.n() >= tmpRt.n()) {
+            while (tmpLt.values[0] != 0) {
+                auto multiplier = tmpLt.values[0] / tmpRt.values[0];
+
+                if (tmpLt.values[0] % tmpRt.values[0] != 0) {
                     multiplier = multiplier + 1;
                 }
 
-                for (size_t i = 0; i < rt.n(); ++i) {
-                    tmp.values[i] = ModArithmetic<X>::subtract(tmp.values[i], multiplier * rt.values[i], lt.p());
+                for (size_t i = 0; i < tmpRt.n(); ++i) {
+                    tmpLt.values[i] = ModArithmetic<X>::subtract(tmpLt.values[i], multiplier * tmpRt.values[i], lt.p());
                 }
             }
 
-            tmp.values.erase(tmp.values.begin());
+            tmpLt.values.erase(tmpLt.values.begin());
         }
 
-        return tmp;
+        return tmpLt;
     }
 
     /* Creates Monic Polynomial from given Polynomial */
