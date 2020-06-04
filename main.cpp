@@ -7,31 +7,52 @@
 #endif
 
 namespace test {
-    std::vector<std::vector<int>> f9mul = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
-                                           {0, 1, 2, 3, 4, 5, 6, 7, 8},
-                                           {0, 2, 1, 6, 8, 7, 3, 5, 4},
-                                           {0, 3, 6, 2, 5, 8, 1, 4, 7},
-                                           {0, 4, 8, 5, 6, 1, 7, 2, 3},
-                                           {0, 5, 7, 8, 1, 3, 4, 6, 2},
-                                           {0, 6, 3, 1, 7, 4, 2, 8, 5},
-                                           {0, 7, 5, 4, 2, 6, 8, 3, 1},
-                                           {0, 8, 4, 7, 3, 2, 5, 1, 6}};
 
-    gf::Polynomial<int> f9primitive("x^2 + 1", 3, 3);
+    void testF25() {
+        gf::Polynomial<int> f25primitive("x^5 + 4x + 1", 5, 6);
 
-    std::vector<std::vector<int>> f8mul = {{0, 0, 0, 0, 0, 0, 0, 0},
-                                           {0, 1, 2, 3, 4, 5, 6, 7},
-                                           {0, 2, 4, 6, 3, 1, 7, 5},
-                                           {0, 3, 6, 5, 7, 4, 1, 2},
-                                           {0, 4, 3, 7, 6, 2, 5, 1},
-                                           {0, 5, 1, 4, 2, 7, 3, 6},
-                                           {0, 6, 7, 1, 5, 3, 2, 4},
-                                           {0, 7, 5, 2, 1, 6, 4, 3}};
+        std::vector<std::vector<std::string>> testCases =
+                {
+                        {"1 + x + x^2 + x^3 + x^4", "1 + x + x^2 + x^3 + x^4", "2 + 3x + 4x^2 + x^4"},
+                        {"2 + x^2 + x^3 + x^4", "2 + x^2 + x^3 + x^4", "2 + 4x + x^4"},
+                        {"3 + x^2 + 4x^3", "3 + x^2 + 4x^3", "1 + 2x + 2x^2 + 4x^3 + x^4"},
+                        {"1 + 4x^2", "1 + 4x^2", "1 + 3x^2 + x^4"},
+                        {"1 + x + x^2 + x^3 + x^4", "1 + 4x^2", "2 + x + 4x^2"},
+                        {"2 + x^2 + x^3 + x^4", "1 + x + x^2 + x^3 + x^4", "4 + 2x + 4x^2 + x^4"},
+                        {"3 + x^2 + 4x^3", "1 + x + x^2 + x^3 + x^4", "3 + 3x + 2x^3 + 3x^4"},
+                        {"2 + x^2 + x^3 + x^4", "3 + x^2 + 4x^3", "1 + x^2 + 4x^4"},
+                        {"1 + 4x^2", "3 + x^2 + 4x^3", "2 + x + 3x^2 + 4x^3 + 4x^4"},
+                        {"x", "x", "x^2"},
+                        {"2x", "x^2", "2x^3"},
+                        {"2x^2", "2x^2", "4x^4"},
+                        {"x^3", "4x^2", "1 + 4x"},
+                        {"x^3", "x^4", "4x^2 + x^3"},
+                        {"5 + 5x", "1 + x^4", "0"},
+                        {"5 + x + x^2", "x", "x^2 + x^3"},
+                        {"5 + x + x^2", "x + x^4", "4 + 2x^2 + x^3"},
+                        {"4 + x^4", "4x + x^3", "1 + 4x^2"},
+                        {"4x + x^3", "3 + 5x^4", "2x + 3x^3"},
+                        {"4x + x^3", "3 + 5x + 5x^4", "2x + 3x^3"},
+                };
 
-    gf::Polynomial<int> f8primitive("x^3 + x + 1", 2, 4);
+        size_t counter = 0;
+        for(const auto& testCase: testCases) {
+            const auto& a = gf::Polynomial<int>(testCase[0], 5, 5),
+                        b = gf::Polynomial<int>(testCase[1], 5, 5),
+                        expected = gf::Polynomial<int>(testCase[2], 5, 5);
 
+            auto result = gf::multiply(a, b, f25primitive);
+            if (result.toString() == expected.toString()) {
+                counter += 1;
+            }
+            else {
+                std::cout << "FAILED: " << "multiply(" << a.toString() << ", " << b.toString() << ") returned " << result.toString() << " should return " << expected.toString() << std::endl;
+            }
+        }
+        std::cout << "TESTS PASSED: " << counter << "/" << testCases.size() << std::endl;
+    }
 
-    void testMul(int p, int n, std::vector<std::vector<int>> table, const gf::Polynomial<int> primitive) {
+    void testMul(int p, int n, std::vector<std::vector<int>> table, const gf::Polynomial<int>& primitive) {
         std::cout << "TEST multiplication p=" << p << ", n=" << n << std::endl;
 
         int bound = intPow(p, n);
@@ -53,9 +74,35 @@ namespace test {
         std::cout << "PASSED " << successfulTest << "/" << bound * bound << " TESTS" << std::endl;
     }
 
+
+
     void run() {
+        std::vector<std::vector<int>> f9mul = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                               {0, 1, 2, 3, 4, 5, 6, 7, 8},
+                                               {0, 2, 1, 6, 8, 7, 3, 5, 4},
+                                               {0, 3, 6, 2, 5, 8, 1, 4, 7},
+                                               {0, 4, 8, 5, 6, 1, 7, 2, 3},
+                                               {0, 5, 7, 8, 1, 3, 4, 6, 2},
+                                               {0, 6, 3, 1, 7, 4, 2, 8, 5},
+                                               {0, 7, 5, 4, 2, 6, 8, 3, 1},
+                                               {0, 8, 4, 7, 3, 2, 5, 1, 6}};
+
+        gf::Polynomial<int> f9primitive("x^2 + 1", 3, 3);
+
+        std::vector<std::vector<int>> f8mul = {{0, 0, 0, 0, 0, 0, 0, 0},
+                                               {0, 1, 2, 3, 4, 5, 6, 7},
+                                               {0, 2, 4, 6, 3, 1, 7, 5},
+                                               {0, 3, 6, 5, 7, 4, 1, 2},
+                                               {0, 4, 3, 7, 6, 2, 5, 1},
+                                               {0, 5, 1, 4, 2, 7, 3, 6},
+                                               {0, 6, 7, 1, 5, 3, 2, 4},
+                                               {0, 7, 5, 2, 1, 6, 4, 3}};
+
+        gf::Polynomial<int> f8primitive("x^3 + x + 1", 2, 4);
+
         testMul(3, 2, f9mul, f9primitive);
         testMul(2, 3, f8mul, f8primitive);
+        testF25();
     }
 
     void
@@ -300,22 +347,8 @@ namespace ui {
 
 
 int main() {
-
-//    test::testCalculatingCyclicPolynomial();
-   // test::run();
-
-    gf::Polynomial<int> first("x^8+2x^7+3x^6+4x^5+5x^4+4x^3+3x^2+2x+1", 5, 9);
-    gf::Polynomial<int> second("x^5+4x+2", 5, 9);
-//    gf::Polynomial<int> first("6x^5+3x^4+6x^3+5x^2+6x+3", 7, 9);
-//    gf::Polynomial<int> second("4x^3+x^2+3x+1", 7, 9);
-//    gf::Polynomial<int> first("x^5+x^3+2x^2+x+2", 3, 9);
-//    gf::Polynomial<int> second("x^3+2x^2+x+1", 3, 9);
-
-    std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second);
-    std::cout << "Quotient: " << res1.first.toString() << " Remainder: " << gf::modDivide(first, second).toString() << std::endl;
-
-
-
-    // ui::interactionLoop();
+    //test::testF25();
+    ui::interactionLoop();
+    
     return 0;
 }
