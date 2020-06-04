@@ -278,14 +278,10 @@ namespace gf {
 
         while (tmpLt.n() >= tmpRt.n()) {
             while (tmpLt.values[0] != 0) {
-                auto multiplier = tmpLt.values[0] / tmpRt.values[0];
-
-                if (tmpLt.values[0] % tmpRt.values[0] != 0) {
-                    multiplier = multiplier + 1;
-                }
+                auto multiplier = ModArithmetic<X>::divide(tmpLt.values[0], tmpRt.values[0], lt.p());
 
                 for (size_t i = 0; i < tmpRt.n(); ++i) {
-                    tmpLt.values[i] = ModArithmetic<X>::subtract(tmpLt.values[i], multiplier * tmpRt.values[i], lt.p());
+                    tmpLt.values[i] = ModArithmetic<X>::subtract(tmpLt.values[i], ModArithmetic<X>::multiply(multiplier, tmpRt.values[i], lt.p()), lt.p());
                 }
             }
 
@@ -380,7 +376,7 @@ namespace gf {
      */
     template<typename X>
     X sumPow(Polynomial<X> &poly, int maxPow) {
-        X sum;
+        X sum = 0;
         for (int i = 0; i <= maxPow; i++) {
             sum += poly.values[i];
         }

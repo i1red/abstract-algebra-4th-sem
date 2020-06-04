@@ -2,6 +2,10 @@
 #include "GaloisField/Polynomial.h"
 #include "CyclicPolynomial/CyclicPolynomial.h"
 
+#ifndef INT_MAX
+#define INT_MAX 2147483647
+#endif
+
 namespace test {
     std::vector<std::vector<int>> f9mul = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
                                            {0, 1, 2, 3, 4, 5, 6, 7, 8},
@@ -301,14 +305,14 @@ int main() {
    // test::run();
 
     gf::Polynomial<int> first("x^8+2x^7+3x^6+4x^5+5x^4+4x^3+3x^2+2x+1", 5, 9);
-    gf::Polynomial<int> second("x^5+4x+1", 5, 9);
+    gf::Polynomial<int> second("x^5+4x+2", 5, 9);
 //    gf::Polynomial<int> first("6x^5+3x^4+6x^3+5x^2+6x+3", 7, 9);
 //    gf::Polynomial<int> second("4x^3+x^2+3x+1", 7, 9);
 //    gf::Polynomial<int> first("x^5+x^3+2x^2+x+2", 3, 9);
 //    gf::Polynomial<int> second("x^3+2x^2+x+1", 3, 9);
 
     std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second);
-    std::cout << "Quotient: " << res1.first.toString() << " Remainder: " << res1.second.toString() << std::endl;
+    std::cout << "Quotient: " << res1.first.toString() << " Remainder: " << gf::modDivide(first, second).toString() << std::endl;
 
 
 
