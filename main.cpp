@@ -76,11 +76,19 @@ namespace test {
         gf::Polynomial<int>fourth("2x + 3", 5,3);
         gf::Polynomial<int> f9primitive("x^3 + 3x + 2", 5, 4);
 
-        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res1 = gf::divide(first,second,f6primitive);
+        gf:: Polynomial<int> a("4x^3 + 3x^2 + 2x + 1" , 5, 5);
+        gf::Polynomial<int>b("x + 1", 5,5);
+        gf::Polynomial<int> primitive("x^5 + 4x + 1", 5, 6);
+
+
+       /* std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res1 = gf::divide(first,second,f6primitive);
         std::cout<<"Quotient: " << res1.first  << " Remainder: " << res1.second << std::endl;
 
         std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res2 = gf::divide(third,fourth,f9primitive);
         std::cout<<"Quotient: " << res2.first  << " Remainder: " << res2.second << std::endl;
+*/
+        std::pair<gf::Polynomial<int>,gf::Polynomial<int>>res3 = gf::divide(a,b,primitive);
+        std::cout<<"Quotient: " << res3.first.toString()  << " Remainder: " << res3.second.toString() << std::endl;
 
     }
 
