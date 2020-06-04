@@ -430,12 +430,12 @@ namespace gf {
         auto itr = pol.begin();
 
         int arr[q - 1][q - 1];
-        for (auto i = 0; i < q - 1; i++)
-            if (itr->first == i && itr != pol.end()) {
-                arr[0][i] = itr->second;
-                itr++;
-            } else
-                arr[0][i] = 0;
+        for (auto i=0; i<q-1; i++)
+            arr[0][i] = 0;
+
+        for (itr; itr != pol.end(); itr++)
+                arr[0][itr->first % (q-1)] += itr->second;
+
         for (auto i = 1; i < q - 1; i++) {
             for (auto j = 0; j < q - 2; j++)
                 arr[i][j] = arr[i - 1][j + 1];
