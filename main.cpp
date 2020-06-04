@@ -309,7 +309,7 @@ int main() {
 
     std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second);
     std::cout << "Quotient: " << res1.first.toString() << " Remainder: " << res1.second.toString() << std::endl;
-
+std::cout << "check" << std::endl;
 
 
     // ui::interactionLoop();
