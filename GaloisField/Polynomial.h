@@ -468,12 +468,17 @@ namespace gf {
     template<typename X>
     std::pair<Polynomial<X>, Polynomial<X>>
     divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
-        if (divident.values[0] == 0 && divisor.values[0] != 0) {
-            throw std::invalid_argument("Pow of divident must be higher ");
-        }
         Polynomial<X> tet(divident.values, divident.p());
         size_t sizeDivident = divident.values.size();
         std::vector<X> quotientVec(sizeDivident, 0);
+
+        if (divident.values[0] == 0 && divisor.values[0] != 0) {
+            Polynomial<X> quot(quotientVec, divident.p());
+            std::pair<Polynomial<X>, Polynomial<X>> unexpected(quot,tet);
+            return unexpected;
+            //throw std::invalid_argument("For correct result pow of divident must be higher ");
+        }
+
         int iterDivisor = 0;
         for (int j = 0; j < sizeDivident; ++j) {
             if (divisor.values[j] != 0) {
