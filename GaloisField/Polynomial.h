@@ -530,7 +530,9 @@ namespace gf {
         }
 
 //        return result;
-        return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1), gf::Polynomial<int>("8x^3+4x^2+1", p, n)};
+        return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1),
+                gf::Polynomial<int>("8x^3+4x^2+1", p, n + 1),
+                gf::Polynomial<int>("2x^4+4", p, n + 1)};
     }
 
 

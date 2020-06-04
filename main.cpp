@@ -92,7 +92,7 @@ namespace test {
 namespace ui {
 
     int p = -1, n = -1;
-//    gf::Polynomial<int> *primitive;
+    gf::Polynomial<int> *primitive;
 
     void newLine() {
         std::cout << "->";
@@ -189,19 +189,19 @@ namespace ui {
         std::cout << "Enter p and n before use commands" << std::endl;
         p = readPrimeIntValue("Enter p");
         n = readIntValue("Enter n");
-//        std::cout << "Enter max amount of irreducible polynomials to show:" << std::endl;
-//        int amount = readIntValue("Enter amount");
-//        std::vector<gf::Polynomial<int>> vector = gf::getAllIrreduciblePolynomials(p, n, amount);
-//
-//        std::string allPol;
-//        for (int i = 0; i < vector.size(); ++i) {
-//            gf::Polynomial<int> polynomial = vector.at(i);
-//            allPol += std::to_string(i + 1) + ". " + polynomial.toString() + '\n';
-//        }
-//
-//        std::cout << allPol;
-//        int choice = readIntValue("Choose polynomial");
-//        primitive = &vector.at(choice - 1);
+        std::cout << "Enter max amount of irreducible polynomials to show:" << std::endl;
+        int amount = readIntValue("Enter amount");
+        std::vector<gf::Polynomial<int>> vector = gf::getAllIrreduciblePolynomials(p, n, amount);
+
+        std::string allPol;
+        for (int i = 0; i < vector.size(); ++i) {
+            gf::Polynomial<int> polynomial = vector.at(i);
+            allPol += std::to_string(i + 1) + ". " + polynomial.toString() + '\n';
+        }
+
+        std::cout << allPol;
+        int choice = readIntValue("Choose polynomial");
+        primitive = &vector.at(choice - 1);
     }
 
     gf::Polynomial<int> getPolynomialByInput(const std::string &text, int order) {
@@ -228,8 +228,8 @@ namespace ui {
         } else if (command == "multiply") {
             gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for multiplying", n);
             gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for multiplying", n);
-            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for multiplying", n + 1);
-            value1 = gf::multiply(value1, value2, primitive);
+//            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for multiplying", n + 1);
+            value1 = gf::multiply(value1, value2, *primitive);
             std::cout << value1.toString() << std::endl;
 
         } else if (command == "derivative") {
@@ -256,8 +256,8 @@ namespace ui {
         } else if (command == "divide") {
             gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for division", n);
             gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for division", n);
-            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for division", n + 1);
-            std::pair<gf::Polynomial<int>, gf::Polynomial<int>> pair = gf::divide(value1, value2, primitive);
+//            gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for division", n + 1);
+            std::pair<gf::Polynomial<int>, gf::Polynomial<int>> pair = gf::divide(value1, value2, *primitive);
             std::cout << "Quotient: " << pair.first.toString() << std::endl;
             std::cout << "Reminder: " << pair.second.toString() << std::endl;
 
