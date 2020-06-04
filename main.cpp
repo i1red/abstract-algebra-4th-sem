@@ -79,11 +79,11 @@ namespace test {
         gf::Polynomial<int> fourth("2x + 3", 5, 3);
         gf::Polynomial<int> f9primitive("x^3 + 3x + 2", 5, 4);
 
-        std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second, f6primitive);
-        std::cout << "Quotient: " << res1.first << " Remainder: " << res1.second << std::endl;
+//        std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second, f6primitive);
+       // std::cout << "Quotient: " << res1.first << " Remainder: " << res1.second << std::endl;
 
-        std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res2 = gf::divide(third, fourth, f9primitive);
-        std::cout << "Quotient: " << res2.first << " Remainder: " << res2.second << std::endl;
+      //  std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res2 = gf::divide(third, fourth, f9primitive);
+       // std::cout << "Quotient: " << res2.first << " Remainder: " << res2.second << std::endl;
 
     }
 
@@ -91,7 +91,7 @@ namespace test {
 
 namespace ui {
     
-    const int INT_MAX = 2147483647;
+    //const int INT_MAX = 2147483647;
 
     int p = -1, n = -1;
 //    gf::Polynomial<int> *primitive;
@@ -259,9 +259,9 @@ namespace ui {
             gf::Polynomial<int> value1 = getPolynomialByInput("Enter first polynomial for division", n);
             gf::Polynomial<int> value2 = getPolynomialByInput("Enter second polynomial for division", n);
             gf::Polynomial<int> primitive = getPolynomialByInput("Enter primitive polynomial for division", n + 1);
-            std::pair<gf::Polynomial<int>, gf::Polynomial<int>> pair = gf::divide(value1, value2, primitive);
-            std::cout << "Quotient: " << pair.first.toString() << std::endl;
-            std::cout << "Reminder: " << pair.second.toString() << std::endl;
+            //std::pair<gf::Polynomial<int>, gf::Polynomial<int>> pair = gf::divide(value1, value2, primitive);
+            //std::cout << "Quotient: " << pair.first.toString() << std::endl;
+            //std::cout << "Reminder: " << pair.second.toString() << std::endl;
 
         } else if (command == "cyclic") {
             int value = readIntValue("Enter n");
@@ -290,7 +290,6 @@ namespace ui {
                 execute(command);
             }
         }
-
         std::cout << "Goodbye";
     };
 }
@@ -299,7 +298,20 @@ namespace ui {
 int main() {
 
 //    test::testCalculatingCyclicPolynomial();
-    test::run();
+   // test::run();
 
+    gf::Polynomial<int> first("x^8+2x^7+3x^6+4x^5+5x^4+4x^3+3x^2+2x+1", 5, 9);
+    gf::Polynomial<int> second("x^5+4x+1", 5, 9);
+//    gf::Polynomial<int> first("6x^5+3x^4+6x^3+5x^2+6x+3", 7, 9);
+//    gf::Polynomial<int> second("4x^3+x^2+3x+1", 7, 9);
+//    gf::Polynomial<int> first("x^5+x^3+2x^2+x+2", 3, 9);
+//    gf::Polynomial<int> second("x^3+2x^2+x+1", 3, 9);
+
+    std::pair<gf::Polynomial<int>, gf::Polynomial<int>> res1 = gf::divide(first, second);
+    std::cout << "Quotient: " << res1.first.toString() << " Remainder: " << res1.second.toString() << std::endl;
+
+
+
+    // ui::interactionLoop();
     return 0;
 }
