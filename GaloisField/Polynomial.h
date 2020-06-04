@@ -434,7 +434,7 @@ namespace gf {
             arr[0][i] = 0;
 
         for (itr; itr != pol.end(); itr++)
-                arr[0][itr->first % (q-1)] += itr->second;
+                arr[0][itr->first % (q-1)] = (arr[0][itr->first % (q-1)] + itr->second) % q;
 
         for (auto i = 1; i < q - 1; i++) {
             for (auto j = 0; j < q - 2; j++)
