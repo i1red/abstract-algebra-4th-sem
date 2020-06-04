@@ -71,13 +71,16 @@ namespace gf {
 
         template<typename X>
         friend std::pair<Polynomial<X>, Polynomial<X>>
-        divide(const Polynomial<X> &, const Polynomial<X> &, const Polynomial<X> &);
+        divide(const Polynomial<X> &, const Polynomial<X> &);
 
         template<typename X>
         friend X sumPow(Polynomial<X> &poly, int maxPow);
 
         template<typename X>
         friend std::pair<X, X> positionDivide(Polynomial<X> &poly, int pow);
+
+        template <typename X>
+        friend Polynomial<X> simplMult(const Polynomial<X> &, const Polynomial<X> &);
 
     };
 
@@ -470,6 +473,39 @@ namespace gf {
         return q - 1 - r;
     }
 
+    template <typename X>
+    Polynomial<X> simplMult(const Polynomial<X> &first, const Polynomial<X> &second){
+        std:: vector<X> result(first.values.size(),0);
+        std::pair<X,X>temp_pow_koef;
+        for(int i=0; i<second.values.size(); i++){
+            if(second.values[i] != 0){
+                temp_pow_koef.first =second.values[i];
+                temp_pow_koef.second = i;
+            }
+        }
+        std::map<X, X> pows;
+        for (int i = 0; i < first.values.size(); i++) {
+            int size = first.values.size();
+            pows[i] = size - i - 1;
+        }
+        auto pow = pows[temp_pow_koef.second];
+
+        for(int i=0; i<first.values.size(); i++) {
+            if(first.values[i] != 0) {
+                auto step = pows[i];
+                auto finPow= pow + step ;
+                for (auto j: pows) {
+                    if (j.second == finPow) {
+                        result[j.first] = ModArithmetic<X>::multiply(first.values[i], temp_pow_koef.first, first.p_);
+                        break;
+                    }
+                }
+            }
+        }
+        Polynomial<X>mul(result, first.p_);
+        return mul;
+    }
+
 
     /**
      * Function that divide polynoms in Field
@@ -482,7 +518,7 @@ namespace gf {
      */
     template<typename X>
     std::pair<Polynomial<X>, Polynomial<X>>
-    divide(const Polynomial<X> &divident, const Polynomial<X> &divisor, const Polynomial<X> &primitive) {
+    divide(const Polynomial<X> &divident, const Polynomial<X> &divisor) {
         Polynomial<X> tet(divident.values, divident.p());
         size_t sizeDivident = divident.values.size();
         std::vector<X> quotientVec(sizeDivident, 0);
@@ -491,7 +527,6 @@ namespace gf {
             Polynomial<X> quot(quotientVec, divident.p());
             std::pair<Polynomial<X>, Polynomial<X>> unexpected(quot,tet);
             return unexpected;
-            //throw std::invalid_argument("For correct result pow of divident must be higher ");
         }
 
         int iterDivisor = 0;
@@ -509,7 +544,8 @@ namespace gf {
             tempDivident.at(pow_and_koef.second) = modKoef;
             quotientVec = VecAdd(quotientVec, tempDivident);
             Polynomial<X> mult(tempDivident, divident.p_);
-            Polynomial<X> result = multiply(divisor, mult, primitive);
+
+            Polynomial<X> result = simplMult(divisor, mult);
             Polynomial<X> substr = subtract(tet, result);
             tet = substr;
         }
