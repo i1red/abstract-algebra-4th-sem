@@ -82,6 +82,21 @@ namespace gf {
         template <typename X>
         friend Polynomial<X> simplMult(const Polynomial<X> &, const Polynomial<X> &);
 
+        template<typename X>
+        friend int getPower(Polynomial<X> a);
+
+        template<typename X>
+        friend bool equals(Polynomial<X> a, Polynomial<X> b);
+
+        template<typename X>
+        friend Polynomial<X> gcd_polynom(Polynomial<X> a, Polynomial<X> b);
+
+        template<typename X>
+        friend std::vector<Polynomial<X>> factorise_Ri(int q, int n);
+
+        template<typename X>
+        friend bool check_zero(Polynomial<X> a);
+
     };
 
     template<typename T>
@@ -590,8 +605,214 @@ namespace gf {
 //        return result;
         return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1), gf::Polynomial<int>("8x^3+4x^2+1", p, n)};
     }
+    
+    /
+     * function to calculate Euler Functions
+     *
+     * @param int
+     * @return
+     */
+    int phi(int n) {
+        int result = n;
+        for (int i = 2; i * i <= n; ++i)
+            if (n % i == 0) {
+                while (n % i == 0)
+                    n /= i;
+                result -= result / i;
+            }
+        if (n > 1)
+            result -= result / n;
+        return result;
+    }
+    /
+     * function for checking polynomial equality
+     *
+     * @tparam X
+     * @param Polynomial<X>
+     * @param Polynomial<X>
+     * @return
+     */
+    template<typename X>
+    bool equals(Polynomial<X> a, Polynomial<X> b) {
+        if (a.n() != b.n())
+            return false;
+        for (size_t i = 0; i < a.n(); i++) {
+            if (a.values[i] != b.values[i]) return false;
+        }
+        return true;
+    }
+    /
+     * function to find the maximum degree of a polynomial
+     *
+     * @tparam X
+     * @param Polynomial<X>
+     * @return
+     */
+    template<typename X>
+    int getPower(Polynomial<X> a) {
+        for (int i = 0; i < a.n(); i++) {
+            if (a.values[i] != 0)
+                return a.n() - i - 1;
+        }
+        return 0;
+    }
+    /
+     * function for finding gcd of two polynomials
+     *
+     * @tparam X
+     * @param Polynomial<X>
+     * @param Polynomial<X>
+     * @return
+     */
+    template<typename X>
+    Polynomial<X> gcd_polynom(Polynomial<X> a, Polynomial<X> b) {
+        Polynomial<X> p1 = a;
+        Polynomial<X> p2 = b;
+        int pow_a = getPower(a);
+        int pow_b = getPower(b);
+        if (getPower(a) >= getPower(b)) {
+            p1 = b;
+            p2 = a;
+        }
+        else {
+            p1 = a;
+            p2 = b;
+        }
 
+        while (p2.n() != 0 && check_zero(p2)) {
+            Polynomial<X> temp = p2;
+            p2 = modDivide(p1, p2);
+            p1 = temp;
+        }
 
+        Polynomial<X> result = p1;
+
+        return MakeMonic(result);
+    }
+    /
+     * function to check the zero polynomial
+     *
+     * @tparam X
+     * @param Polynomial<X>
+     * @return
+     */
+    template<typename X>
+    bool check_zero(Polynomial<X> a) {
+        for (int i = 0; i < a.n(); i++) {
+            if (a.values[i] != 0)
+                return true;
+        }
+        return false;
+    } 
+    /
+     * function to find Ri 
+     *
+     * @tparam X polynomial
+     * @param q
+     * @param n
+     * @param i
+     * @param j
+     * @return
+     */
+    template<typename X>
+    Polynomial<X> find_Ri(int q, int n, int i, int j) {
+        while (((int)pow((double)q, (double)j) * i) % n != i) {
+            j++;
+        }
+        int degree = (int)pow((double)q, (double)j) * i + 1;
+        std::vector<int> Ri_values(degree, 0);
+        for (int k = j - 1; k >= 0; k--) {
+            int d = degree - (int)pow((double)q, (double)k) * i - 1;
+            Ri_values[d] = 1;
+        }
+        Polynomial<X> result(Ri_values, q);
+        return result;
+    }
+    /**
+     * function for finding the decomposition of a circular polynomial
+     *
+     * @tparam X
+     * @param q
+     * @param n
+     * @return
+     */
+    template<typename X>
+    std::vector<Polynomial<X>> factorise_Ri(int q, int n) {
+        std::vector<Polynomial<X>> result;
+        CyclicPolynomial* newCyclic = new CyclicPolynomial();
+        Polynomial<X> cycle_polinomial(newCyclic->calculatePolynomial(n), q);
+        if (n == 1) {
+            result.push_back(cycle_polinomial);
+            return result;
+        }
+        if (std::__gcd(n, q) > 1) {
+            int newN = n;
+            while (newN % q == 0)
+                newN /= q;
+            result = factorise_Ri<X>(q, newN);
+            CyclicPolynomial* new_Cyclic = new CyclicPolynomial();
+            Polynomial<X> new_cycle_polinomial(new_Cyclic->calculatePolynomial(newN), q);
+            size_t repeat = getPower(cycle_polinomial) / getPower(new_cycle_polinomial);
+            size_t count = result.size();
+            for (size_t i = 1; i < repeat; i++) {
+                for (size_t j = 0; j < count; j++) {
+                    result.emplace_back(result[j]);
+                }
+            }
+            return result;
+        }
+        int d = 1;
+        int w;
+        do {
+            d++;
+            w = (int)pow((double)q, (double)d) % n;
+        } while (w != 1);
+        size_t factors_count = phi(n) / d;
+        size_t factor_power = d;
+
+        if (factors_count == 1) {
+            result.push_back(cycle_polinomial);
+            return result;
+        }
+
+        size_t i = 1;
+
+        std::list<Polynomial<X>> temp_pol;
+        temp_pol.push_back(cycle_polinomial);
+
+        while (result.size() < factors_count && i < n) {
+            int j = 1;
+            Polynomial<X> pol_Ri = find_Ri<X>(q, n, i, j);
+            bool factorized = false;
+            j = 0;
+            while (j < q) {
+                Polynomial<X> gcdRi = gcd_polynom(temp_pol.front(), pol_Ri);
+                if (j == 0 && (equals(gcdRi, temp_pol.front()) || equals(gcdRi, pol_Ri))) {
+                    factorized = false;
+                    break;
+                }
+
+                long long gcdPower = getPower<X>(gcdRi);
+                if (gcdPower == factor_power) {
+                    factorized = true;
+                    Polynomial<int> gcdRi_new = MakeMonic(gcdRi);
+                    result.push_back(gcdRi_new);
+                }
+                else if (gcdPower > 0 && gcdPower % factor_power == 0) {
+                    factorized = true;
+                    temp_pol.push_back(gcdRi);
+                }
+
+                pol_Ri = add(pol_Ri, Polynomial<X>("1", pol_Ri.p(), pol_Ri.n()));
+                j++;
+            }
+            if (factorized) {
+                temp_pol.pop_front();
+            }
+            i++;
+        }
+        return result;
+    }
 }
 
 
