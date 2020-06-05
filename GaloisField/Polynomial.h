@@ -606,7 +606,7 @@ namespace gf {
         return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1), gf::Polynomial<int>("8x^3+4x^2+1", p, n)};
     }
     
-    /
+    /**
      * function to calculate Euler Functions
      *
      * @param int
@@ -624,7 +624,7 @@ namespace gf {
             result -= result / n;
         return result;
     }
-    /
+    /**
      * function for checking polynomial equality
      *
      * @tparam X
@@ -641,7 +641,7 @@ namespace gf {
         }
         return true;
     }
-    /
+    /**
      * function to find the maximum degree of a polynomial
      *
      * @tparam X
@@ -656,7 +656,7 @@ namespace gf {
         }
         return 0;
     }
-    /
+    /**
      * function for finding gcd of two polynomials
      *
      * @tparam X
@@ -689,7 +689,7 @@ namespace gf {
 
         return MakeMonic(result);
     }
-    /
+    /**
      * function to check the zero polynomial
      *
      * @tparam X
@@ -704,7 +704,7 @@ namespace gf {
         }
         return false;
     } 
-    /
+    /**
      * function to find Ri 
      *
      * @tparam X polynomial
@@ -742,7 +742,7 @@ namespace gf {
         CyclicPolynomial* newCyclic = new CyclicPolynomial();
         Polynomial<X> cycle_polinomial(newCyclic->calculatePolynomial(n), q);
         if (n == 1) {
-            result.push_back(cycle_polinomial);
+            result.push_back(MakeMonic(cycle_polinomial));
             return result;
         }
         if (std::__gcd(n, q) > 1) {
@@ -771,7 +771,7 @@ namespace gf {
         size_t factor_power = d;
 
         if (factors_count == 1) {
-            result.push_back(cycle_polinomial);
+            result.push_back(MakeMonic(cycle_polinomial));
             return result;
         }
 
