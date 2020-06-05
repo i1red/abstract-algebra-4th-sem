@@ -252,6 +252,10 @@ namespace ui {
 
         std::cout << allPol;
         int choice = readIntValue("Choose polynomial");
+        while (choice > vector.size() || choice < 1) {
+            std::cout << "Enter correct option!" << std::endl;
+            choice = readIntValue("Choose polynomial");
+        }
         primitive = &vector.at(choice - 1);
     }
 

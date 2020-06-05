@@ -786,19 +786,21 @@ namespace gf {
 
         std::vector<gf::Polynomial<int>> result, buffer;
 
-        int num = pow(p, n) - 1;
+        int numberDividedByM = pow(p, n) - 1;
 
-        for (int m = 1; m <= num; ++m) {
-            if ((num % m) == 0) {
+        for (int m = 1; m <= numberDividedByM; m++) {
+            if ((numberDividedByM % m) == 0) {
                 buffer = factorise_Ri<int>(p, m);
 
                 for (auto &irreduciblePolynomial : buffer) {
-                    if (irreduciblePolynomial.n() == n + 1) {
-                        if (result.size() < amount) result.push_back(irreduciblePolynomial);
-                        else return result;
+                    if (getPower(irreduciblePolynomial) == n) {
+                        if (result.size() < amount) {
+                            result.push_back(irreduciblePolynomial);
+                        } else {
+                            return result;
+                        }
                     }
                 }
-
             }
         }
 
