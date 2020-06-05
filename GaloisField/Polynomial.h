@@ -768,6 +768,7 @@ namespace gf {
             w = (int)pow((double)q, (double)d) % n;
         } while (w != 1);
         size_t factors_count = phi(n) / d;
+        if (factors_count == 0) factors_count = 1;
         size_t factor_power = d;
 
         if (factors_count == 1) {
