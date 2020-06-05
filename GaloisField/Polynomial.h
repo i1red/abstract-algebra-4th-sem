@@ -524,7 +524,7 @@ namespace gf {
 
         for (int m = 1; m <= num; ++m) {
             if ((num % m) == 0) {
-                cyclic = new gf::Polynomial<int>((new CyclicPolynomial())->calculatePolynomial(n), p);
+                cyclic = new gf::Polynomial<int>((new CyclicPolynomial())->calculatePolynomial(m), p);
 
                 if (std::__gcd(p, m)) {
 //                    buffer = decompositionWithRi(m);
@@ -545,7 +545,7 @@ namespace gf {
         }
 
 //        return result;
-        return {gf::Polynomial<int>("x^6+x^4+2x^3+x+2", p, n + 1),
+        return {gf::Polynomial<int>("x^7+x^4+2x^3+x+2", p, n + 1),
                 gf::Polynomial<int>("8x^3+4x^2+1", p, n + 1),
                 gf::Polynomial<int>("2x^4+4", p, n + 1)};
     }

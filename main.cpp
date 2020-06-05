@@ -91,7 +91,7 @@ namespace test {
 
 namespace ui {
     
-    const int INT_MAX = 2147483647;
+//    const int INT_MAX = 2147483647;
 
     int p = -1, n = -1;
     gf::Polynomial<int> *primitive;
@@ -299,7 +299,8 @@ namespace ui {
 int main() {
 
 //    test::testCalculatingCyclicPolynomial();
-    test::run();
+//    test::run();
+    ui::interactionLoop();
 
     return 0;
 }
