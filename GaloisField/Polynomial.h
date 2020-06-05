@@ -756,7 +756,7 @@ namespace gf {
             size_t count = result.size();
             for (size_t i = 1; i < repeat; i++) {
                 for (size_t j = 0; j < count; j++) {
-                    result.emplace_back(result[j]);
+                    result.push_back(MakeMonic(result[j]));
                 }
             }
             return result;
